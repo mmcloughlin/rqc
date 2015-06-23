@@ -1,5 +1,7 @@
 # rqc
-Redis query compiler
+
+**Redis query compiler** (rqc) generates lua scripts to execute queries on
+redis sets.
 
 ## Acknowledgements
 
