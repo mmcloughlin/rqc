@@ -37,12 +37,12 @@ type Selection struct {
 }
 
 // Intersect specifies another set key to intersect with.
-func (s Selection) Intersect(key string) Selection {
+func (s *Selection) Intersect(key string) *Selection {
 	s.IntersectionKeys = append(s.IntersectionKeys, key)
 	return s
 }
 
-func (s Selection) Complement(key string) Selection {
+func (s *Selection) Complement(key string) *Selection {
 	id := fmt.Sprintf("diff(%s,%s)", s.BaseKey, key)
 	diffKey := s.Builder.Key(id)
 
@@ -54,7 +54,7 @@ func (s Selection) Complement(key string) Selection {
 	return s
 }
 
-func (s Selection) Generate() string {
+func (s *Selection) Generate() string {
 	code := strings.Join(s.Code, "\n") + "\n"
 
 	intersectionKeyArgs := strings.Join(s.IntersectionKeys, "', '")
@@ -66,12 +66,12 @@ func (s Selection) Generate() string {
 	return code
 }
 
-func (s Selection) Script() *redis.Script {
+func (s *Selection) Script() *redis.Script {
 	code := s.Generate()
 	return redis.NewScript(0, code)
 }
 
-func (s Selection) Run() {
+func (s *Selection) Run() {
 	script := s.Script()
 	_, err := script.Do(s.Builder.Conn)
 	if err != nil {
