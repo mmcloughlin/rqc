@@ -2,6 +2,7 @@ package rqc
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/garyburd/redigo/redis"
@@ -54,12 +55,38 @@ func (s *Selection) Complement(key string) *Selection {
 	return s
 }
 
+func (s *Selection) Filter(key string, r Range) *Selection {
+	id := fmt.Sprintf("filter(%s,%s)", key, r)
+	filterKey := s.Builder.Key(id)
+
+	line := fmt.Sprintf("redis.call('ZUNIONSTORE', '%s', 1, '%s')",
+		filterKey, key)
+	s.Code = append(s.Code, line)
+
+	if r.Min != math.Inf(-1) {
+		line := fmt.Sprintf("redis.call('ZREMRANGEBYSCORE', '%s', '-inf', %f)",
+			filterKey, r.Min)
+		s.Code = append(s.Code, line)
+	}
+
+	if r.Max != math.Inf(1) {
+		line := fmt.Sprintf("redis.call('ZREMRANGEBYSCORE', '%s', %f, 'inf')",
+			filterKey, r.Max)
+		s.Code = append(s.Code, line)
+	}
+
+	s.IntersectionKeys = append(s.IntersectionKeys, filterKey)
+	return s
+}
+
 func (s *Selection) Generate() string {
 	code := strings.Join(s.Code, "\n") + "\n"
 
 	intersectionKeyArgs := strings.Join(s.IntersectionKeys, "', '")
 	code += fmt.Sprintf("redis.call('ZINTERSTORE', '%s', %d, '%s')\n",
 		s.ResultKey, len(s.IntersectionKeys), intersectionKeyArgs)
+
+	fmt.Printf("-\n%s-\n", code)
 
 	return code
 }

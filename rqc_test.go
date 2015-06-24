@@ -67,3 +67,45 @@ func (suite *RedisTestSuite) TestComplement() {
 	}
 	suite.Equal([]string{"1"}, result, "Expected set complement {1}")
 }
+
+func (suite *RedisTestSuite) TestFilterGt() {
+	suite.conn.Do("SADD", "a", 1, 2, 3)
+	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
+
+	query := suite.builder.Select("a").Filter("r", Gt(2.5))
+	query.Run()
+
+	result, err := redis.Strings(suite.conn.Do("ZRANGE", query.ResultKey, 0, -1))
+	if err != nil {
+		panic(err)
+	}
+	suite.Equal([]string{"3"}, result, "Expected filtered result {3}")
+}
+
+func (suite *RedisTestSuite) TestFilterLt() {
+	suite.conn.Do("SADD", "a", 1, 2, 3)
+	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
+
+	query := suite.builder.Select("a").Filter("r", Lt(2.5))
+	query.Run()
+
+	result, err := redis.Strings(suite.conn.Do("ZRANGE", query.ResultKey, 0, -1))
+	if err != nil {
+		panic(err)
+	}
+	suite.Equal([]string{"1", "2"}, result, "Expected filtered result {1,2}")
+}
+
+func (suite *RedisTestSuite) TestFilterRange() {
+	suite.conn.Do("SADD", "a", 1, 2, 3)
+	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
+
+	query := suite.builder.Select("a").Filter("r", Range{1.5, 2.5})
+	query.Run()
+
+	result, err := redis.Strings(suite.conn.Do("ZRANGE", query.ResultKey, 0, -1))
+	if err != nil {
+		panic(err)
+	}
+	suite.Equal([]string{"2"}, result, "Expected filtered result {2}")
+}
