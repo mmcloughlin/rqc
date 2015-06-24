@@ -11,9 +11,9 @@ type Builder struct {
 	Conn redis.Conn
 }
 
-func (e *Builder) Select(key string) *Selection {
+func (b *Builder) Select(key string) *Selection {
 	return &Selection{
-		Conn:             e.Conn,
+		Conn:             b.Conn,
 		BaseKey:          key,
 		ResultKey:        "result",
 		IntersectionKeys: []string{key},
