@@ -1,0 +1,4 @@
+language: go
+install:
+  - go get github.com/garyburd/redigo/redis
+  - go get github.com/stretchr/testify/suite
