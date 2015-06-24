@@ -1,5 +1,7 @@
 # rqc
 
+|buildstatus|
+
 Redis query compiler (rqc) generates lua scripts to execute selection queries
 on redis sets.
 
@@ -15,3 +17,7 @@ around in their source code:
 
 * [django redis engine](https://github.com/MirkoRossini/django-redis-engine)
   also contains very similar ideas
+
+
+.. |buildstatus| image:: https://img.shields.io/travis/mmcloughlin/rqc.svg?style=flat-square
+   :target: https://travis-ci.org/mmcloughlin/rqc
