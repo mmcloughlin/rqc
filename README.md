@@ -3,6 +3,8 @@
 Redis query compiler (rqc) generates lua scripts to execute selection queries
 on redis sets.
 
+> Still under development.
+
 ## Acknowledgements
 
 There are a few similar projects out there and I learned a lot from digging
