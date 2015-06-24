@@ -19,7 +19,10 @@ func (suite *RedisTestSuite) SetupSuite() {
 		panic(err)
 	}
 	suite.conn = conn
-	suite.builder = Builder{Conn: conn}
+	suite.builder = Builder{
+		Conn:      conn,
+		Namespace: "rqc:test",
+	}
 }
 
 func (suite *RedisTestSuite) TearDownSuite() {
@@ -49,4 +52,18 @@ func (suite *RedisTestSuite) TestIntersect() {
 		panic(err)
 	}
 	suite.Equal([]string{"2", "3"}, result, "Expected set intersection {2,3}")
+}
+
+func (suite *RedisTestSuite) TestComplement() {
+	suite.conn.Do("SADD", "a", 1, 2, 3)
+	suite.conn.Do("SADD", "b", 2, 3, 4)
+
+	query := suite.builder.Select("a").Complement("b")
+	query.Run()
+
+	result, err := redis.Strings(suite.conn.Do("ZRANGE", query.ResultKey, 0, -1))
+	if err != nil {
+		panic(err)
+	}
+	suite.Equal([]string{"1"}, result, "Expected set complement {1}")
 }
