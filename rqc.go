@@ -86,8 +86,6 @@ func (s *Selection) Generate() string {
 	code += fmt.Sprintf("redis.call('ZINTERSTORE', '%s', %d, '%s')\n",
 		s.ResultKey, len(s.IntersectionKeys), intersectionKeyArgs)
 
-	fmt.Printf("-\n%s-\n", code)
-
 	return code
 }
 
