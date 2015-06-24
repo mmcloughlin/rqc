@@ -34,6 +34,9 @@ func (suite *RedisTestSuite) SetupTest() {
 	if err != nil {
 		panic(err)
 	}
+	suite.conn.Do("SADD", "a", 1, 2, 3)
+	suite.conn.Do("SADD", "b", 2, 3, 4)
+	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
 }
 
 func TestExampleTestSuite(t *testing.T) {
@@ -41,8 +44,6 @@ func TestExampleTestSuite(t *testing.T) {
 }
 
 func (suite *RedisTestSuite) TestIntersect() {
-	suite.conn.Do("SADD", "a", 1, 2, 3)
-	suite.conn.Do("SADD", "b", 2, 3, 4)
 
 	query := suite.builder.Select("a").Intersect("b")
 	query.Run()
@@ -55,9 +56,6 @@ func (suite *RedisTestSuite) TestIntersect() {
 }
 
 func (suite *RedisTestSuite) TestComplement() {
-	suite.conn.Do("SADD", "a", 1, 2, 3)
-	suite.conn.Do("SADD", "b", 2, 3, 4)
-
 	query := suite.builder.Select("a").Complement("b")
 	query.Run()
 
@@ -69,9 +67,6 @@ func (suite *RedisTestSuite) TestComplement() {
 }
 
 func (suite *RedisTestSuite) TestFilterGt() {
-	suite.conn.Do("SADD", "a", 1, 2, 3)
-	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
-
 	query := suite.builder.Select("a").Filter("r", Gt(2.5))
 	query.Run()
 
@@ -83,9 +78,6 @@ func (suite *RedisTestSuite) TestFilterGt() {
 }
 
 func (suite *RedisTestSuite) TestFilterLt() {
-	suite.conn.Do("SADD", "a", 1, 2, 3)
-	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
-
 	query := suite.builder.Select("a").Filter("r", Lt(2.5))
 	query.Run()
 
@@ -97,9 +89,6 @@ func (suite *RedisTestSuite) TestFilterLt() {
 }
 
 func (suite *RedisTestSuite) TestFilterRange() {
-	suite.conn.Do("SADD", "a", 1, 2, 3)
-	suite.conn.Do("ZADD", "r", 1, 1, 2, 2, 3, 3)
-
 	query := suite.builder.Select("a").Filter("r", Range{1.5, 2.5})
 	query.Run()
 
