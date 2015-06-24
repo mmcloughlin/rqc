@@ -35,7 +35,8 @@ func (s Selection) Intersect(key string) Selection {
 
 func (s Selection) Generate() string {
 	intersectionKeyArgs := strings.Join(s.IntersectionKeys, "', '")
-	return fmt.Sprintf("redis.call('ZINTERSTORE', '%s', %d, '%s')\n", s.ResultKey, len(s.IntersectionKeys), intersectionKeyArgs)
+	return fmt.Sprintf("redis.call('ZINTERSTORE', '%s', %d, '%s')\n",
+		s.ResultKey, len(s.IntersectionKeys), intersectionKeyArgs)
 }
 
 func (s Selection) Script() *redis.Script {
