@@ -13,7 +13,7 @@ type Builder struct {
 
 func (b *Builder) Select(key string) *Selection {
 	return &Selection{
-		Conn:             b.Conn,
+		Builder:          b,
 		BaseKey:          key,
 		ResultKey:        "result",
 		IntersectionKeys: []string{key},
@@ -21,7 +21,7 @@ func (b *Builder) Select(key string) *Selection {
 }
 
 type Selection struct {
-	Conn             redis.Conn
+	Builder          *Builder
 	BaseKey          string
 	ResultKey        string
 	IntersectionKeys []string
@@ -46,7 +46,7 @@ func (s Selection) Script() *redis.Script {
 
 func (s Selection) Run() {
 	script := s.Script()
-	_, err := script.Do(s.Conn)
+	_, err := script.Do(s.Builder.Conn)
 	if err != nil {
 		panic(err)
 	}
