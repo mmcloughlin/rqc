@@ -7,6 +7,27 @@ on redis sets.
 
 > Still under development.
 
+## Installation
+
+```
+go get github.com/mmcloughlin/rqc
+```
+
+## Usage
+
+Create a query builder with
+
+```go
+builder := Builder{
+	Conn:      conn,
+	Namespace: "queries",
+}
+```
+
+Here `Conn` is expected to be a [redigo](github.com/garyburd/redigo/redis)
+redis connection. `Namespace` is a prefix for all intermediate keys produced
+in query execution.
+
 ## Acknowledgements
 
 There are a few similar projects out there and I learned a lot from digging
